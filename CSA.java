@@ -104,13 +104,22 @@ public class CSA {
     }
 
     public static void main(String[] args) {
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader in = null;
+        if(args.length > 0){
+            try {
+                in = new BufferedReader(new FileReader(args[0]));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else {
+            in = new BufferedReader(new InputStreamReader(System.in));
+        }
+
         CSA csa = new CSA(in);
 
         String line;
         try {
             line = in.readLine();
-
             while (!line.isEmpty()) {
                 String[] tokens = line.split(" ");
                 csa.compute(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
