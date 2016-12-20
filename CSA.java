@@ -52,7 +52,7 @@ public class CSA {
         int earliest = Integer.MAX_VALUE;
         for (Connection connection: timetable.connections) {
             if (connection.departure_timestamp >= earliest_arrival[connection.departure_station] &&
-                    connection.arrival_timestamp < earliest_arrival[connection.arrival_station]) {
+                    connection.arrival_timestamp <= earliest_arrival[connection.arrival_station]) {
                 earliest_arrival[connection.arrival_station] = connection.arrival_timestamp;
                 in_connection[connection.arrival_station] = connection;
 
