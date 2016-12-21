@@ -65,27 +65,39 @@ public class CSA {
         }
     }
 
-    void print_result(int arrival_station) {
-        if(in_connection[arrival_station] == null) {
+    void print_result(List<Connection> route_solution) {
+        if(route_solution == null) {
             System.out.println("NO_SOLUTION");
         } else {
-            List<Connection> route = new ArrayList<Connection>();
-            // We have to rebuild the route from the arrival station 
-            Connection last_connection = in_connection[arrival_station];
-            while (last_connection != null) {
-                route.add(last_connection);
-                last_connection = in_connection[last_connection.departure_station];
-            }
-
-            // And now print it out in the right direction
-            Collections.reverse(route);
-            for (Connection connection : route) {
+            Collections.reverse(route_solution);
+            for (Connection connection : route_solution) {
                 System.out.println(connection.departure_station + " " + connection.arrival_station + " " +
                         connection.departure_timestamp + " " + connection.arrival_timestamp);
             }
         }
         System.out.println("");
         System.out.flush();
+    }
+
+    /**
+     * build the list of connections for the trip
+     * @param arrival_station
+     * @return
+     */
+    public List<Connection> buildTripSolution(int arrival_station){
+        //if there is no solution then return null
+        if(in_connection[arrival_station] == null) {
+            return null;
+        } else {
+            List<Connection> route = new ArrayList<Connection>();
+            // We have to rebuild the route from the arrival station
+            Connection last_connection = in_connection[arrival_station];
+            while (last_connection != null) {
+                route.add(last_connection);
+                last_connection = in_connection[last_connection.departure_station];
+            }
+            return route;
+        }
     }
 
     void compute(int departure_station, int arrival_station, int departure_time) {
@@ -100,7 +112,7 @@ public class CSA {
         if (departure_station <= MAX_STATIONS && arrival_station <= MAX_STATIONS) {
             main_loop(arrival_station);
         }
-        print_result(arrival_station);
+        print_result(buildTripSolution(arrival_station));
     }
 
     public static void main(String[] args) {
