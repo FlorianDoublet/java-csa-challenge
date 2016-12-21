@@ -171,6 +171,7 @@ public class CSA {
         for(int i = 0; i < to_permute.size(); i++){
             if(to_permute.get(i).departure_timestamp < timestamp){
                 to_permute.remove(i);
+                i--;
             }
         }
 
@@ -215,7 +216,7 @@ public class CSA {
                 valConcurrent += concurrentRoute.get(i).arrival_timestamp - concurrentRoute.get(i).departure_timestamp;
                 valSolution += routeWithLeastConnections.get(i).arrival_timestamp - routeWithLeastConnections.get(i).departure_timestamp;
             }
-            if(valConcurrent > valSolution){
+            if(valConcurrent < valSolution){
                 //then update the solution if the concurrent is better
                 routeWithLeastConnections = concurrentRoute;
             }
