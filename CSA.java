@@ -1,4 +1,5 @@
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 class Connection {
@@ -44,6 +45,9 @@ public class CSA {
     Connection in_connection[];
     int earliest_arrival[];
 
+    int arrival_station;
+    List<List<Connection>> possibleRoute = new ArrayList<>();
+
     CSA(BufferedReader in) {
         timetable = new Timetable(in);
     }
@@ -69,7 +73,7 @@ public class CSA {
         if(route_solution == null) {
             System.out.println("NO_SOLUTION");
         } else {
-            Collections.reverse(route_solution);
+            //Collections.reverse(route_solution);
             for (Connection connection : route_solution) {
                 System.out.println(connection.departure_station + " " + connection.arrival_station + " " +
                         connection.departure_timestamp + " " + connection.arrival_timestamp);
@@ -115,6 +119,52 @@ public class CSA {
         print_result(buildTripSolution(arrival_station));
     }
 
+    void compute_least_connection_route(int departure_station, int arrival_station, int departure_time){
+        List<Connection> final_list = new ArrayList<>();
+        this.arrival_station = arrival_station;
+
+        permute(timetable.connections, final_list, departure_station, departure_time);
+        if(!possibleRoute.isEmpty()){
+            for(List<Connection> route : possibleRoute){
+                print_result(route);
+                return;
+            }
+
+        } else {
+            print_result(null);
+        }
+    }
+
+    void permute(List<Connection> to_permute, List<Connection> final_list, int station, int timestamp){
+        if(final_list.size() != 0) {
+            if(final_list.get(final_list.size()-1).arrival_station == this.arrival_station){
+                possibleRoute.add(final_list);
+                return;
+            }
+
+        }
+
+        for(int i = 0; i < to_permute.size(); i++){
+            if(to_permute.get(i).departure_timestamp < timestamp){
+                to_permute.remove(i);
+            }
+        }
+        for(int i = 0; i < to_permute.size(); i++){
+            if(to_permute.get(i).departure_station != station  || to_permute.get(i).departure_timestamp < timestamp ){
+                continue;
+            }
+
+            List<Connection> final_cpy = new ArrayList<>(final_list);
+            List<Connection> to_perm_cpy = new ArrayList<>(to_permute);
+            final_cpy.add(to_perm_cpy.remove(i));
+
+            permute(to_perm_cpy, final_cpy, final_cpy.get(final_cpy.size()-1).arrival_station, final_cpy.get(final_cpy.size()-1).arrival_timestamp);
+        }
+
+    }
+
+
+
     public static void main(String[] args) {
         BufferedReader in = null;
         if(args.length > 0){
@@ -128,17 +178,25 @@ public class CSA {
         }
 
         CSA csa = new CSA(in);
+        Connection[] connections = new Connection[csa.timetable.connections.size()];
+        connections = csa.timetable.connections.toArray(connections);
 
         String line;
+
         try {
             line = in.readLine();
             while (!line.isEmpty()) {
                 String[] tokens = line.split(" ");
-                csa.compute(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
+                csa.compute_least_connection_route(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
+
                 line = in.readLine();
             }
-        } catch( Exception e) {
+
+        } catch (IOException e) {
             System.out.println("Something went wrong while reading the parameters: " + e.getMessage());
         }
+
+
+
     }
 }
