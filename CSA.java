@@ -195,15 +195,19 @@ public class CSA {
     }
 
     /**
-     * Will test if the concurrent route is better than the existing best one
-     * and if it is replace the older route by the concurrent
+         * Will test if the concurrent route is better than the existing best one
+         * and if it is replace the older route by the concurrent
      * @param concurrentRoute The route that we gonna test to see if it's a better route than the current best solution
      */
     public void computeBestMinimumRoute(List<Connection> concurrentRoute){
         //the first most important parameter is the arrival time
-        if(concurrentRoute.get(concurrentRoute.size()-1).arrival_timestamp < earlieastValue){
-            earlieastValue = concurrentRoute.get(concurrentRoute.size()-1).arrival_timestamp;
-            routeWithLeastConnections = concurrentRoute;
+        if(concurrentRoute.get(concurrentRoute.size()-1).arrival_timestamp != earlieastValue){
+            if(concurrentRoute.get(concurrentRoute.size()-1).arrival_timestamp < earlieastValue){
+                earlieastValue = concurrentRoute.get(concurrentRoute.size()-1).arrival_timestamp;
+                routeWithLeastConnections = concurrentRoute;
+            } else {
+                return;
+            }
         } else if (concurrentRoute.get(0).departure_timestamp > routeWithLeastConnections.get(0).departure_timestamp){
             //here the arrival time is the same, but we can still leave later
             routeWithLeastConnections = concurrentRoute;

@@ -47,6 +47,21 @@ public class TestCSA {
     }
 
     @Test
+    public void testSimpleRoute() throws  IOException {
+        String query = "1 2 1000\n";
+        String fileContent = timeStamp + "\n" + query + "\r";
+
+        Files.write(file, Arrays.asList(fileContent.split("\n")), Charset.forName("UTF-8"));
+        String[] args = {file.getFileName().toString()};
+
+        CSA.main(args);
+
+        String[] res = outContent.toString().split("\n");
+        assertEquals(1, res.length);
+        assertEquals("1 2 2000 3000", res[0]);
+    }
+
+    @Test
     public void testEarliestLeastConnectionsRoute() throws IOException {
 
         String query = "1 5 3000\n";
