@@ -88,7 +88,7 @@ public class TestCSA {
                 "1 2 4000 7200\n" +
                 "2 5 8000 9000\n";
 
-        String query = "1 5 3000\n";
+        String query = "1 5 2000\n";
         String fileContent = timeStamp + "\n" + query + "\r";
 
         Files.write(file, Arrays.asList(fileContent.split("\n")), Charset.forName("UTF-8"));
