@@ -38,11 +38,8 @@ class Timetable {
 };
 
 public class CSA {
-    public static final int MAX_STATIONS  = 100000;
 
     Timetable timetable;
-    Connection in_connection[];
-    int earliest_arrival[];
 
     //for least connections problem
     int arrival_station;
@@ -54,22 +51,6 @@ public class CSA {
         timetable = new Timetable(in);
     }
 
-    void main_loop(int arrival_station) {
-        int earliest = Integer.MAX_VALUE;
-        for (Connection connection: timetable.connections) {
-            if (connection.departure_timestamp >= earliest_arrival[connection.departure_station] &&
-                    connection.arrival_timestamp <= earliest_arrival[connection.arrival_station]) {
-                earliest_arrival[connection.arrival_station] = connection.arrival_timestamp;
-                in_connection[connection.arrival_station] = connection;
-
-                if(connection.arrival_station == arrival_station) {
-                    earliest = Math.min(earliest, connection.arrival_timestamp);
-                }
-            } else if(connection.arrival_timestamp > earliest) {
-                return;
-            }
-        }
-    }
 
     void print_result(List<Connection> route_solution) {
         if(route_solution == null || route_solution.isEmpty()) {
@@ -85,41 +66,6 @@ public class CSA {
         System.out.flush();
     }
 
-    /**
-     * build the list of connections for the trip
-     * @param arrival_station
-     * @return
-     */
-    public List<Connection> buildTripSolution(int arrival_station){
-        //if there is no solution then return null
-        if(in_connection[arrival_station] == null) {
-            return null;
-        } else {
-            List<Connection> route = new ArrayList<Connection>();
-            // We have to rebuild the route from the arrival station
-            Connection last_connection = in_connection[arrival_station];
-            while (last_connection != null) {
-                route.add(last_connection);
-                last_connection = in_connection[last_connection.departure_station];
-            }
-            return route;
-        }
-    }
-
-    void compute(int departure_station, int arrival_station, int departure_time) {
-        in_connection = new Connection[MAX_STATIONS];
-        earliest_arrival = new int[MAX_STATIONS];
-        for(int i = 0; i < MAX_STATIONS; ++i) {
-            in_connection[i] = null;
-            earliest_arrival[i] = Integer.MAX_VALUE;
-        }
-        earliest_arrival[departure_station] = departure_time;
-
-        if (departure_station <= MAX_STATIONS && arrival_station <= MAX_STATIONS) {
-            main_loop(arrival_station);
-        }
-        print_result(buildTripSolution(arrival_station));
-    }
 
     /**
      * Compute and print the solution with the least connection, and if there is several solution
